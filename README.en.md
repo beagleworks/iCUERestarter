@@ -32,7 +32,7 @@ On first launch, a `settings.json` file is created. To change the iCUE path, rig
 }
 ```
 
-Restart the app after changing settings.
+Settings are automatically applied on the next iCUE restart.
 
 ## Requirements
 
