@@ -17,13 +17,26 @@ iCUE はスリープから復帰した後、キーボードを見失い、ライ
 3. **左クリック**: iCUE を即座に再起動
 4. **右クリック**: メニュー表示
    - 「iCUE を再起動」
+   - 「設定ファイルを開く」
    - 「終了」
+
+## 設定
+
+初回起動時に `settings.json` が作成されます。iCUE のパスを変更する場合は、右クリックメニューから「設定ファイルを開く」を選択して編集してください。
+
+```json
+{
+  "IcuePath": "C:\\Program Files\\Corsair\\CORSAIR iCUE 5 Software\\iCUE.exe"
+}
+```
+
+設定変更後はアプリを再起動してください。
 
 ## 動作要件
 
 - Windows 10/11
 - .NET 8.0 Runtime
-- Corsair iCUE 5 (デフォルトパスにインストール)
+- Corsair iCUE 5
 
 ## ビルド
 

@@ -5,12 +5,15 @@ namespace iCUERestarter;
 public class TrayApplicationContext : ApplicationContext
 {
     private readonly NotifyIcon _notifyIcon;
-    private const string IcuePath = @"C:\Program Files\Corsair\CORSAIR iCUE 5 Software\iCUE.exe";
+    private readonly Settings _settings;
 
     public TrayApplicationContext()
     {
+        _settings = Settings.Load();
+
         var contextMenu = new ContextMenuStrip();
         contextMenu.Items.Add("iCUE を再起動", null, OnRestart);
+        contextMenu.Items.Add("設定ファイルを開く", null, OnOpenSettings);
         contextMenu.Items.Add(new ToolStripSeparator());
         contextMenu.Items.Add("終了", null, OnExit);
 
@@ -65,11 +68,12 @@ public class TrayApplicationContext : ApplicationContext
             Thread.Sleep(1000);
 
             // iCUE を起動
-            if (File.Exists(IcuePath))
+            var icuePath = _settings.IcuePath;
+            if (File.Exists(icuePath))
             {
                 Process.Start(new ProcessStartInfo
                 {
-                    FileName = IcuePath,
+                    FileName = icuePath,
                     UseShellExecute = true
                 });
 
@@ -77,13 +81,28 @@ public class TrayApplicationContext : ApplicationContext
             }
             else
             {
-                _notifyIcon.ShowBalloonTip(3000, "エラー", $"iCUE が見つかりません:\n{IcuePath}", ToolTipIcon.Error);
+                _notifyIcon.ShowBalloonTip(3000, "エラー", $"iCUE が見つかりません:\n{icuePath}", ToolTipIcon.Error);
             }
         }
         catch (Exception ex)
         {
             _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
         }
+    }
+
+    private void OnOpenSettings(object? sender, EventArgs e)
+    {
+        var settingsPath = Path.Combine(AppContext.BaseDirectory, "settings.json");
+        if (!File.Exists(settingsPath))
+        {
+            _settings.Save();
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = settingsPath,
+            UseShellExecute = true
+        });
     }
 
     private void OnExit(object? sender, EventArgs e)
