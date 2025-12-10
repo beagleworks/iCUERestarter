@@ -67,8 +67,9 @@ public class TrayApplicationContext : ApplicationContext
             // 少し待機してから再起動
             Thread.Sleep(1000);
 
-            // iCUE を起動
-            var icuePath = _settings.IcuePath;
+            // 設定を再読み込みして iCUE を起動
+            var settings = Settings.Load();
+            var icuePath = settings.IcuePath;
             if (File.Exists(icuePath))
             {
                 Process.Start(new ProcessStartInfo
