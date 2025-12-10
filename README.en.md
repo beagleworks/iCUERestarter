@@ -28,7 +28,7 @@ On first launch, a `settings.json` file is created. To change the iCUE path, rig
 
 ```json
 {
-  "IcuePath": "C:\\Program Files\\Corsair\\CORSAIR iCUE 5 Software\\iCUE.exe"
+  "IcuePath": "C:\\Program Files\\Corsair\\Corsair iCUE5 Software\\iCUE.exe"
 }
 ```
 

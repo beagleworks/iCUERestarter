@@ -28,7 +28,7 @@ iCUE はスリープから復帰した後、キーボードを見失い、ライ
 
 ```json
 {
-  "IcuePath": "C:\\Program Files\\Corsair\\CORSAIR iCUE 5 Software\\iCUE.exe"
+  "IcuePath": "C:\\Program Files\\Corsair\\Corsair iCUE5 Software\\iCUE.exe"
 }
 ```
 

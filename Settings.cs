@@ -10,7 +10,7 @@ public class Settings
         SettingsFileName
     );
 
-    public string IcuePath { get; set; } = @"C:\Program Files\Corsair\CORSAIR iCUE 5 Software\iCUE.exe";
+    public string IcuePath { get; set; } = @"C:\Program Files\Corsair\Corsair iCUE5 Software\iCUE.exe";
 
     public static Settings Load()
     {
