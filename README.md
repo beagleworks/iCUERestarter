@@ -1,5 +1,7 @@
 # iCUE Restarter
 
+[English](README.en.md)
+
 Corsair iCUE がスリープ復帰後にキーボードを認識しなくなる問題を解決するためのシステムトレイ常駐アプリです。
 
 ## 問題
