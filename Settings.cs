@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Windows.Forms;
 
 namespace iCUERestarter;
 
@@ -28,7 +29,10 @@ public class Settings
         }
         catch
         {
-            return new Settings();
+            var fallback = new Settings();
+            fallback.Save();
+            MessageBox.Show("設定ファイルが壊れていたため、デフォルト設定に復元しました。", "iCUE Restarter", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return fallback;
         }
     }
 

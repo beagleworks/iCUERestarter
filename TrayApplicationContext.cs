@@ -7,23 +7,26 @@ public class TrayApplicationContext : ApplicationContext
 {
     private readonly NotifyIcon _notifyIcon;
     private readonly Settings _settings;
+    private readonly ContextMenuStrip _contextMenu;
+    private readonly Icon _icon;
+    private bool _disposed;
 
     public TrayApplicationContext()
     {
         _settings = Settings.Load();
 
-        var contextMenu = new ContextMenuStrip();
-        contextMenu.Items.Add("iCUE を再起動", null, OnRestart);
-        contextMenu.Items.Add("設定ファイルを開く", null, OnOpenSettings);
-        contextMenu.Items.Add(new ToolStripSeparator());
-        contextMenu.Items.Add("終了", null, OnExit);
+        _contextMenu = new ContextMenuStrip();
+        _contextMenu.Items.Add("iCUE を再起動", null, OnRestart);
+        _contextMenu.Items.Add("設定ファイルを開く", null, OnOpenSettings);
+        _contextMenu.Items.Add(new ToolStripSeparator());
+        _contextMenu.Items.Add("終了", null, OnExit);
 
-        var icon = LoadEmbeddedIcon() ?? SystemIcons.Application;
+        _icon = LoadEmbeddedIcon() ?? SystemIcons.Application;
 
         _notifyIcon = new NotifyIcon
         {
-            Icon = icon,
-            ContextMenuStrip = contextMenu,
+            Icon = _icon,
+            ContextMenuStrip = _contextMenu,
             Text = "iCUE Restarter",
             Visible = true
         };
@@ -31,20 +34,20 @@ public class TrayApplicationContext : ApplicationContext
         _notifyIcon.MouseClick += OnMouseClick;
     }
 
-    private void OnMouseClick(object? sender, MouseEventArgs e)
+    private async void OnMouseClick(object? sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
-            RestartIcue();
+            await RestartIcueAsync();
         }
     }
 
-    private void OnRestart(object? sender, EventArgs e)
+    private async void OnRestart(object? sender, EventArgs e)
     {
-        RestartIcue();
+        await RestartIcueAsync();
     }
 
-    private void RestartIcue()
+    private async Task RestartIcueAsync()
     {
         try
         {
@@ -68,7 +71,7 @@ public class TrayApplicationContext : ApplicationContext
             }
 
             // 少し待機してから再起動
-            Thread.Sleep(3000);
+            await Task.Delay(3000);
 
             // 設定を再読み込みして iCUE を起動
             var settings = Settings.Load();
@@ -111,8 +114,7 @@ public class TrayApplicationContext : ApplicationContext
 
     private void OnExit(object? sender, EventArgs e)
     {
-        _notifyIcon.Visible = false;
-        _notifyIcon.Dispose();
+        Dispose();
         Application.Exit();
     }
 
@@ -121,5 +123,19 @@ public class TrayApplicationContext : ApplicationContext
         var assembly = Assembly.GetExecutingAssembly();
         using var stream = assembly.GetManifestResourceStream("iCUERestarter.ico.app.ico");
         return stream != null ? new Icon(stream) : null;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+        if (disposing)
+        {
+            _notifyIcon.Visible = false;
+            _notifyIcon.Dispose();
+            _contextMenu.Dispose();
+            _icon.Dispose();
+        }
+        _disposed = true;
+        base.Dispose(disposing);
     }
 }

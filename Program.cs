@@ -14,6 +14,7 @@ static class Program
         if (!createdNew)
         {
             MessageBox.Show("iCUE Restarter は既に実行中です。", "iCUE Restarter", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            _mutex?.Dispose();
             return;
         }
 
