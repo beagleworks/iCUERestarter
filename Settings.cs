@@ -12,8 +12,9 @@ public class Settings
 
     public string IcuePath { get; set; } = @"C:\Program Files\Corsair\Corsair iCUE5 Software\iCUE.exe";
 
-    public static Settings Load()
+    public static Settings Load(out bool recoveredFromCorruption)
     {
+        recoveredFromCorruption = false;
         if (!File.Exists(SettingsPath))
         {
             var defaultSettings = new Settings();
@@ -26,9 +27,13 @@ public class Settings
             var json = File.ReadAllText(SettingsPath);
             return JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
         }
-        catch
+        catch (JsonException)
         {
-            return new Settings();
+            return CreateRecoveredSettings(out recoveredFromCorruption);
+        }
+        catch (IOException)
+        {
+            return CreateRecoveredSettings(out recoveredFromCorruption);
         }
     }
 
@@ -37,5 +42,13 @@ public class Settings
         var options = new JsonSerializerOptions { WriteIndented = true };
         var json = JsonSerializer.Serialize(this, options);
         File.WriteAllText(SettingsPath, json);
+    }
+
+    private static Settings CreateRecoveredSettings(out bool recoveredFromCorruption)
+    {
+        var fallback = new Settings();
+        fallback.Save();
+        recoveredFromCorruption = true;
+        return fallback;
     }
 }
