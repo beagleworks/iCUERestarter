@@ -13,8 +13,9 @@ public class Settings
 
     public string IcuePath { get; set; } = @"C:\Program Files\Corsair\Corsair iCUE5 Software\iCUE.exe";
 
-    public static Settings Load()
+    public static Settings Load(out bool recoveredFromCorruption)
     {
+        recoveredFromCorruption = false;
         if (!File.Exists(SettingsPath))
         {
             var defaultSettings = new Settings();
@@ -31,9 +32,14 @@ public class Settings
         {
             var fallback = new Settings();
             fallback.Save();
-            MessageBox.Show("設定ファイルが壊れていたため、デフォルト設定に復元しました。", "iCUE Restarter", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            recoveredFromCorruption = true;
             return fallback;
         }
+    }
+
+    public static Settings Load()
+    {
+        return Load(out _);
     }
 
     public void Save()

@@ -9,11 +9,13 @@ public class TrayApplicationContext : ApplicationContext
     private readonly Settings _settings;
     private readonly ContextMenuStrip _contextMenu;
     private readonly Icon _icon;
+    private readonly bool _ownsIcon;
+    private readonly bool _settingsRecovered;
     private bool _disposed;
 
     public TrayApplicationContext()
     {
-        _settings = Settings.Load();
+        _settings = Settings.Load(out _settingsRecovered);
 
         _contextMenu = new ContextMenuStrip();
         _contextMenu.Items.Add("iCUE を再起動", null, OnRestart);
@@ -21,7 +23,9 @@ public class TrayApplicationContext : ApplicationContext
         _contextMenu.Items.Add(new ToolStripSeparator());
         _contextMenu.Items.Add("終了", null, OnExit);
 
-        _icon = LoadEmbeddedIcon() ?? SystemIcons.Application;
+        var embeddedIcon = LoadEmbeddedIcon();
+        _icon = embeddedIcon ?? SystemIcons.Application;
+        _ownsIcon = embeddedIcon != null;
 
         _notifyIcon = new NotifyIcon
         {
@@ -32,19 +36,38 @@ public class TrayApplicationContext : ApplicationContext
         };
 
         _notifyIcon.MouseClick += OnMouseClick;
+
+        if (_settingsRecovered)
+        {
+            _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+        }
     }
 
     private async void OnMouseClick(object? sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
-            await RestartIcueAsync();
+            try
+            {
+                await RestartIcueAsync();
+            }
+            catch (Exception ex)
+            {
+                _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
+            }
         }
     }
 
     private async void OnRestart(object? sender, EventArgs e)
     {
-        await RestartIcueAsync();
+        try
+        {
+            await RestartIcueAsync();
+        }
+        catch (Exception ex)
+        {
+            _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
+        }
     }
 
     private async Task RestartIcueAsync()
@@ -74,8 +97,12 @@ public class TrayApplicationContext : ApplicationContext
             await Task.Delay(3000);
 
             // 設定を再読み込みして iCUE を起動
-            var settings = Settings.Load();
+            var settings = Settings.Load(out var recovered);
             var icuePath = settings.IcuePath;
+            if (recovered)
+            {
+                _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+            }
             if (File.Exists(icuePath))
             {
                 Process.Start(new ProcessStartInfo
@@ -133,7 +160,10 @@ public class TrayApplicationContext : ApplicationContext
             _notifyIcon.Visible = false;
             _notifyIcon.Dispose();
             _contextMenu.Dispose();
-            _icon.Dispose();
+            if (_ownsIcon)
+            {
+                _icon.Dispose();
+            }
         }
         _disposed = true;
         base.Dispose(disposing);
