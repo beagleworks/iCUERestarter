@@ -29,17 +29,11 @@ public class Settings
         }
         catch (JsonException)
         {
-            var fallback = new Settings();
-            fallback.Save();
-            recoveredFromCorruption = true;
-            return fallback;
+            return CreateRecoveredSettings(out recoveredFromCorruption);
         }
         catch (IOException)
         {
-            var fallback = new Settings();
-            fallback.Save();
-            recoveredFromCorruption = true;
-            return fallback;
+            return CreateRecoveredSettings(out recoveredFromCorruption);
         }
         catch
         {
@@ -52,5 +46,13 @@ public class Settings
         var options = new JsonSerializerOptions { WriteIndented = true };
         var json = JsonSerializer.Serialize(this, options);
         File.WriteAllText(SettingsPath, json);
+    }
+
+    private static Settings CreateRecoveredSettings(out bool recoveredFromCorruption)
+    {
+        var fallback = new Settings();
+        fallback.Save();
+        recoveredFromCorruption = true;
+        return fallback;
     }
 }

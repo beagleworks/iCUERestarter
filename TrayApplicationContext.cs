@@ -152,7 +152,7 @@ public class TrayApplicationContext : ApplicationContext
             {
                 ShowRestartError(ex);
             }
-        }, TaskContinuationOptions.OnlyOnFaulted);
+        }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void ShowRestartError(Exception ex)
