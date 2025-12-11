@@ -106,8 +106,7 @@ public class TrayApplicationContext : ApplicationContext
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
+            ShowRestartError(ex);
         }
     }
 
@@ -149,12 +148,18 @@ public class TrayApplicationContext : ApplicationContext
         RestartIcueAsync().ContinueWith(t =>
         {
             var ex = t.Exception?.GetBaseException();
-            if (ex != null)
+            if (ex != null && !_disposed)
             {
-                _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
-                Debug.WriteLine(ex);
+                ShowRestartError(ex);
             }
         }, TaskContinuationOptions.OnlyOnFaulted);
+    }
+
+    private void ShowRestartError(Exception ex)
+    {
+        if (_disposed) return;
+        Debug.WriteLine(ex);
+        _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
     }
 
     protected override void Dispose(bool disposing)

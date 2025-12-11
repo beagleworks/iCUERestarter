@@ -27,12 +27,23 @@ public class Settings
             var json = File.ReadAllText(SettingsPath);
             return JsonSerializer.Deserialize<Settings>(json) ?? new Settings();
         }
-        catch
+        catch (JsonException)
         {
             var fallback = new Settings();
             fallback.Save();
             recoveredFromCorruption = true;
             return fallback;
+        }
+        catch (IOException)
+        {
+            var fallback = new Settings();
+            fallback.Save();
+            recoveredFromCorruption = true;
+            return fallback;
+        }
+        catch
+        {
+            throw;
         }
     }
 
