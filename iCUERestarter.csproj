@@ -8,7 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <Version>1.0.4</Version>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <Version>1.0.5</Version>
     <ApplicationIcon>ico\app.ico</ApplicationIcon>
   </PropertyGroup>
 
