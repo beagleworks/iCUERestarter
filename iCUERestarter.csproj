@@ -8,11 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <ApplicationIcon>ico\app.ico</ApplicationIcon>
+    <Version>1.0.3</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="ico\app.ico" />
-  </ItemGroup>
 
 </Project>
