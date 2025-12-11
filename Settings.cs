@@ -36,11 +36,6 @@ public class Settings
         }
     }
 
-    public static Settings Load()
-    {
-        return Load(out _);
-    }
-
     public void Save()
     {
         var options = new JsonSerializerOptions { WriteIndented = true };

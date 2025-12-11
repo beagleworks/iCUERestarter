@@ -47,13 +47,13 @@ public class TrayApplicationContext : ApplicationContext
     {
         if (e.Button == MouseButtons.Left)
         {
-            _ = RestartIcueAsync();
+            FireAndForgetRestart();
         }
     }
 
     private void OnRestart(object? sender, EventArgs e)
     {
-        _ = RestartIcueAsync();
+        FireAndForgetRestart();
     }
 
     private async Task RestartIcueAsync()
@@ -106,6 +106,7 @@ public class TrayApplicationContext : ApplicationContext
         }
         catch (Exception ex)
         {
+            Debug.WriteLine(ex);
             _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
         }
     }
@@ -141,6 +142,19 @@ public class TrayApplicationContext : ApplicationContext
     private void ShowSettingsRecoveredNotification()
     {
         _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+    }
+
+    private void FireAndForgetRestart()
+    {
+        RestartIcueAsync().ContinueWith(t =>
+        {
+            var ex = t.Exception?.GetBaseException();
+            if (ex != null)
+            {
+                _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
+                Debug.WriteLine(ex);
+            }
+        }, TaskContinuationOptions.OnlyOnFaulted);
     }
 
     protected override void Dispose(bool disposing)
