@@ -2,6 +2,8 @@
 
 [English](README.en.md)
 
+<img src="iCUERestarter_image.png" width="450" alt="iCUE Restarter">
+
 Corsair iCUE がスリープ復帰後にキーボードを認識しなくなる問題を解決するためのシステムトレイ常駐アプリです。
 
 ## 問題
@@ -55,6 +57,10 @@ Windows 起動時に自動起動させる場合:
 1. `Win + R` で「ファイル名を指定して実行」を開く
 2. `shell:startup` と入力して Enter
 3. 開いたフォルダに `iCUERestarter.exe` のショートカットを配置
+
+## 利用上の注意
+
+1度だけではキーボードを認識しない場合があります。その場合は再度左クリックで iCUE を 2~3回再起動してください。
 
 ## ライセンス
 

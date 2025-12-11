@@ -2,6 +2,8 @@
 
 [日本語](README.md)
 
+<img src="iCUERestarter_image.png" width="450" alt="iCUE Restarter">
+
 A system tray application to restart Corsair iCUE when it loses keyboard connection after waking from sleep.
 
 ## Problem
@@ -55,6 +57,10 @@ To launch automatically when Windows starts:
 1. Press `Win + R` to open "Run"
 2. Type `shell:startup` and press Enter
 3. Create a shortcut to `iCUERestarter.exe` in the opened folder
+
+## Usage Notes
+
+The keyboard may not be recognized on the first attempt. If this happens, please restart iCUE 2-3 times by left-clicking again.
 
 ## License
 
