@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace iCUERestarter;
@@ -35,11 +34,6 @@ public class Settings
         catch (IOException)
         {
             return CreateRecoveredSettings(out recoveredFromCorruption);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            throw;
         }
     }
 

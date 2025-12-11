@@ -11,6 +11,8 @@ public class TrayApplicationContext : ApplicationContext
     private readonly Icon _icon;
     private readonly bool _ownsIcon;
     private readonly bool _settingsRecovered;
+    private readonly CancellationTokenSource _restartCts = new();
+    private Task? _restartTask;
     private bool _disposed;
 
     public TrayApplicationContext()
@@ -37,10 +39,7 @@ public class TrayApplicationContext : ApplicationContext
 
         _notifyIcon.MouseClick += OnMouseClick;
 
-        if (_settingsRecovered)
-        {
-            ShowSettingsRecoveredNotification();
-        }
+        NotifySettingsRecovery(_settingsRecovered);
     }
 
     private void OnMouseClick(object? sender, MouseEventArgs e)
@@ -56,7 +55,7 @@ public class TrayApplicationContext : ApplicationContext
         FireAndForgetRestart();
     }
 
-    private async Task RestartIcueAsync()
+    private async Task RestartIcueAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -80,15 +79,12 @@ public class TrayApplicationContext : ApplicationContext
             }
 
             // 少し待機してから再起動
-            await Task.Delay(3000);
+            await Task.Delay(3000, cancellationToken);
 
             // 設定を再読み込みして iCUE を起動
             var settings = Settings.Load(out var recovered);
             var icuePath = settings.IcuePath;
-            if (recovered)
-            {
-                ShowSettingsRecoveredNotification();
-            }
+            NotifySettingsRecovery(recovered);
             if (File.Exists(icuePath))
             {
                 Process.Start(new ProcessStartInfo
@@ -103,6 +99,10 @@ public class TrayApplicationContext : ApplicationContext
             {
                 _notifyIcon.ShowBalloonTip(3000, "エラー", $"iCUE が見つかりません:\n{icuePath}", ToolTipIcon.Error);
             }
+        }
+        catch (OperationCanceledException)
+        {
+            // ignore cancellation
         }
         catch (Exception ex)
         {
@@ -143,16 +143,24 @@ public class TrayApplicationContext : ApplicationContext
         _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
     }
 
+    private void NotifySettingsRecovery(bool recovered)
+    {
+        if (recovered)
+        {
+            ShowSettingsRecoveredNotification();
+        }
+    }
+
     private void FireAndForgetRestart()
     {
-        _ = HandleRestartAsync();
+        _restartTask = HandleRestartAsync();
     }
 
     private async Task HandleRestartAsync()
     {
         try
         {
-            await RestartIcueAsync();
+            await RestartIcueAsync(_restartCts.Token);
         }
         catch (Exception ex)
         {
@@ -173,6 +181,7 @@ public class TrayApplicationContext : ApplicationContext
         if (_disposed) return;
         if (disposing)
         {
+            _restartCts.Cancel();
             _notifyIcon.Visible = false;
             _notifyIcon.Dispose();
             _contextMenu.Dispose();
@@ -180,6 +189,7 @@ public class TrayApplicationContext : ApplicationContext
             {
                 _icon.Dispose();
             }
+            _restartCts.Dispose();
         }
         _disposed = true;
         base.Dispose(disposing);
