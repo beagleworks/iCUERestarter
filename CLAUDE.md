@@ -8,11 +8,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Debug build
 dotnet build
 
-# Release build
+# Release build (development/testing)
 dotnet build -c Release
-```
+# Output: bin/Release/net8.0-windows/iCUERestarter.exe (requires DLL and JSON files)
 
-Output: `bin/Release/net8.0-windows/iCUERestarter.exe`
+# Release build (for distribution - single executable file)
+dotnet publish -c Release -o publish
+# Output: publish/iCUERestarter.exe (standalone, no additional files needed)
+```
 
 ## Project Overview
 
@@ -31,3 +34,7 @@ This is a .NET 8.0 Windows Forms application with three main components:
 - Settings are reloaded on each restart action (hot-reload without app restart)
 - iCUE process is killed, waits 3 seconds, then relaunched from configured path
 - Default iCUE path: `C:\Program Files\Corsair\Corsair iCUE5 Software\iCUE.exe`
+
+## User Guidelines
+
+- リリースの際は、バイナリファイルを添付すること

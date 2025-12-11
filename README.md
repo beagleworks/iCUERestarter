@@ -39,16 +39,25 @@ iCUE はスリープから復帰した後、キーボードを見失い、ライ
 ## 動作要件
 
 - Windows 10/11
-- .NET 8.0 Runtime
 - Corsair iCUE 5
+
+※ .NET Runtime は不要です（EXEに自己完結しています）
+
+## インストール
+
+[Releases](https://github.com/beagleworks/iCUERestarter/releases) から `iCUERestarter.exe` をダウンロードして実行してください。追加ファイルは不要です。
 
 ## ビルド
 
 ```bash
+# 開発用ビルド
 dotnet build -c Release
-```
+# 出力: bin/Release/net8.0-windows/iCUERestarter.exe
 
-出力先: `bin/Release/net8.0-windows/iCUERestarter.exe`
+# 配布用ビルド（単一実行ファイル）
+dotnet publish -c Release -o publish
+# 出力: publish/iCUERestarter.exe
+```
 
 ## スタートアップ登録
 

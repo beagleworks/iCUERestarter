@@ -39,16 +39,25 @@ Settings take effect immediately after saving (no need to restart the app).
 ## Requirements
 
 - Windows 10/11
-- .NET 8.0 Runtime
 - Corsair iCUE 5
+
+※ .NET Runtime is not required (included in the executable)
+
+## Installation
+
+Download `iCUERestarter.exe` from [Releases](https://github.com/beagleworks/iCUERestarter/releases) and run it. No additional files needed.
 
 ## Build
 
 ```bash
+# Development build
 dotnet build -c Release
-```
+# Output: bin/Release/net8.0-windows/iCUERestarter.exe
 
-Output: `bin/Release/net8.0-windows/iCUERestarter.exe`
+# Distribution build (single executable file)
+dotnet publish -c Release -o publish
+# Output: publish/iCUERestarter.exe
+```
 
 ## Run at Startup
 
