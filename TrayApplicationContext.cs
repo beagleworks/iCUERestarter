@@ -17,9 +17,12 @@ public class TrayApplicationContext : ApplicationContext
         contextMenu.Items.Add(new ToolStripSeparator());
         contextMenu.Items.Add("終了", null, OnExit);
 
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "ico", "app.ico");
+        var icon = File.Exists(iconPath) ? new Icon(iconPath) : SystemIcons.Application;
+
         _notifyIcon = new NotifyIcon
         {
-            Icon = SystemIcons.Application,
+            Icon = icon,
             ContextMenuStrip = contextMenu,
             Text = "iCUE Restarter",
             Visible = true
