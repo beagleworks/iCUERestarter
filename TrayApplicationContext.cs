@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 
 namespace iCUERestarter;
 
@@ -17,8 +18,7 @@ public class TrayApplicationContext : ApplicationContext
         contextMenu.Items.Add(new ToolStripSeparator());
         contextMenu.Items.Add("終了", null, OnExit);
 
-        var iconPath = Path.Combine(AppContext.BaseDirectory, "ico", "app.ico");
-        var icon = File.Exists(iconPath) ? new Icon(iconPath) : SystemIcons.Application;
+        var icon = LoadEmbeddedIcon() ?? SystemIcons.Application;
 
         _notifyIcon = new NotifyIcon
         {
@@ -114,5 +114,12 @@ public class TrayApplicationContext : ApplicationContext
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         Application.Exit();
+    }
+
+    private static Icon? LoadEmbeddedIcon()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream("iCUERestarter.ico.app.ico");
+        return stream != null ? new Icon(stream) : null;
     }
 }
