@@ -145,14 +145,20 @@ public class TrayApplicationContext : ApplicationContext
 
     private void FireAndForgetRestart()
     {
-        RestartIcueAsync().ContinueWith(t =>
+        _ = HandleRestartAsync();
+    }
+
+    private async Task HandleRestartAsync()
+    {
+        try
         {
-            var ex = t.Exception?.GetBaseException();
-            if (ex != null && !_disposed)
-            {
-                ShowRestartError(ex);
-            }
-        }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+            await RestartIcueAsync();
+        }
+        catch (Exception ex)
+        {
+            if (_disposed) return;
+            ShowRestartError(ex);
+        }
     }
 
     private void ShowRestartError(Exception ex)
