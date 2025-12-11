@@ -9,6 +9,11 @@
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <Version>1.0.4</Version>
+    <ApplicationIcon>ico\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ico\app.ico" />
+  </ItemGroup>
 
 </Project>
