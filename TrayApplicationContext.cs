@@ -39,7 +39,7 @@ public class TrayApplicationContext : ApplicationContext
 
         if (_settingsRecovered)
         {
-            _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+            ShowSettingsRecoveredNotification();
         }
     }
 
@@ -47,27 +47,13 @@ public class TrayApplicationContext : ApplicationContext
     {
         if (e.Button == MouseButtons.Left)
         {
-            try
-            {
-                await RestartIcueAsync();
-            }
-            catch (Exception ex)
-            {
-                _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
-            }
+            await ExecuteRestartAsync();
         }
     }
 
     private async void OnRestart(object? sender, EventArgs e)
     {
-        try
-        {
-            await RestartIcueAsync();
-        }
-        catch (Exception ex)
-        {
-            _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
-        }
+        await ExecuteRestartAsync();
     }
 
     private async Task RestartIcueAsync()
@@ -101,7 +87,7 @@ public class TrayApplicationContext : ApplicationContext
             var icuePath = settings.IcuePath;
             if (recovered)
             {
-                _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+                ShowSettingsRecoveredNotification();
             }
             if (File.Exists(icuePath))
             {
@@ -150,6 +136,23 @@ public class TrayApplicationContext : ApplicationContext
         var assembly = Assembly.GetExecutingAssembly();
         using var stream = assembly.GetManifestResourceStream("iCUERestarter.ico.app.ico");
         return stream != null ? new Icon(stream) : null;
+    }
+
+    private void ShowSettingsRecoveredNotification()
+    {
+        _notifyIcon.ShowBalloonTip(3000, "iCUE Restarter", "設定ファイルを復元しました。必要に応じて再設定してください。", ToolTipIcon.Warning);
+    }
+
+    private async Task ExecuteRestartAsync()
+    {
+        try
+        {
+            await RestartIcueAsync();
+        }
+        catch (Exception ex)
+        {
+            _notifyIcon.ShowBalloonTip(3000, "エラー", $"再起動に失敗しました:\n{ex.Message}", ToolTipIcon.Error);
+        }
     }
 
     protected override void Dispose(bool disposing)
