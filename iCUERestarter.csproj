@@ -13,7 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ico\app.ico" />
+    <EmbeddedResource Include="ico\app.ico">
+      <LogicalName>iCUERestarter.ico.app.ico</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
